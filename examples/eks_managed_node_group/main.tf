@@ -67,7 +67,7 @@ module "eks" {
 
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
-    instance_types = ["t3.medium"]
+    instance_types = [".medium"]
   }
 
   eks_managed_node_groups = {
@@ -184,7 +184,7 @@ module "eks" {
       # Note: this assumes the AMI provided is an EKS optimized AMI derivative
       enable_bootstrap_user_data = true
 
-      instance_types = ["t3.medium"]
+      instance_types = [".medium"]
     }
 
     # Complete
@@ -211,7 +211,7 @@ module "eks" {
 
       capacity_type        = "SPOT"
       force_update_version = true
-      instance_types       = [t3.medium"]
+      instance_types       = ["t3.medium"]
       labels = {
         GithubRepo = "terraform-aws-eks"
         GithubOrg  = "terraform-aws-modules"
@@ -285,7 +285,7 @@ module "eks" {
       # Can be enabled when appropriate for testing/validation
       create = false
 
-      instance_types = ["t3.medium"]
+      instance_types = [".medium"]
       ami_type       = "AL2_x86_64_GPU"
 
       enable_efa_support      = true
