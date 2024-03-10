@@ -299,7 +299,7 @@ module "eks" {
   #     max_size     = 2
   #     desired_size = 2
   #   }
-  # }
+  }
 
   access_entries = {
     # One access entry with a policy associated
