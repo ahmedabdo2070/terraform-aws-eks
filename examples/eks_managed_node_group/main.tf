@@ -32,14 +32,14 @@ module "eks" {
   cluster_endpoint_public_access = true
 
   # IPV6
-  cluster_ip_family          = "ipv6"
-  create_cni_ipv6_iam_policy = true
+  cluster_ip_family          = "ipv4"
+  create_cni_ipv6_iam_policy = false
 
   enable_cluster_creator_admin_permissions = true
 
   # Enable EFA support by adding necessary security group rules
   # to the shared node security group
-  enable_efa_support = true
+  enable_efa_support = false
 
   cluster_addons = {
     coredns = {
@@ -408,15 +408,15 @@ module "vpc" {
 
   enable_nat_gateway     = true
   single_nat_gateway     = true
-  enable_ipv6            = true
-  create_egress_only_igw = true
+  enable_ipv6            = false
+  create_egress_only_igw = false
 
-  public_subnet_ipv6_prefixes                    = [0, 1, 2]
-  public_subnet_assign_ipv6_address_on_creation  = true
-  private_subnet_ipv6_prefixes                   = [3, 4, 5]
-  private_subnet_assign_ipv6_address_on_creation = true
-  intra_subnet_ipv6_prefixes                     = [6, 7, 8]
-  intra_subnet_assign_ipv6_address_on_creation   = true
+  #public_subnet_ipv6_prefixes                    = [0, 1, 2]
+  #public_subnet_assign_ipv6_address_on_creation  = true
+  #private_subnet_ipv6_prefixes                   = [3, 4, 5]
+  #private_subnet_assign_ipv6_address_on_creation = true
+  #intra_subnet_ipv6_prefixes                     = [6, 7, 8]
+  #intra_subnet_assign_ipv6_address_on_creation   = true
 
   public_subnet_tags = {
     "kubernetes.io/role/elb" = 1
