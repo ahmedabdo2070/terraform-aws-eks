@@ -72,19 +72,19 @@ module "eks" {
 
   eks_managed_node_groups = {
     # Default node group - as provided by AWS EKS
-    # default_node_group = {
-    #   # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
-    #   # so we need to disable it to use the default template provided by the AWS EKS managed node group service
-    #   use_custom_launch_template = false
+    default_node_group = {
+      # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
+      # so we need to disable it to use the default template provided by the AWS EKS managed node group service
+      use_custom_launch_template = false
 
-    #   disk_size = 50
+      disk_size = 50
 
-    #   # Remote access cannot be specified with a launch template
-    #   remote_access = {
-    #     ec2_ssh_key               = module.key_pair.key_pair_name
-    #     source_security_group_ids = [aws_security_group.remote_access.id]
-    #   }
-    # }
+      # Remote access cannot be specified with a launch template
+      remote_access = {
+        ec2_ssh_key               = module.key_pair.key_pair_name
+        source_security_group_ids = [aws_security_group.remote_access.id]
+      }
+    }
 
     # AL2023 node group utilizing new user data format which utilizes nodeadm
     # to join nodes to the cluster (instead of /etc/eks/bootstrap.sh)
@@ -122,20 +122,20 @@ module "eks" {
     #   platform = "bottlerocket"
     # }
 
-    # # Adds to the AWS provided user data
-    # bottlerocket_add = {
-    #   ami_type = "BOTTLEROCKET_x86_64"
-    #   platform = "bottlerocket"
+    # Adds to the AWS provided user data
+    bottlerocket_add = {
+      ami_type = "BOTTLEROCKET_x86_64"
+      platform = "bottlerocket"
 
-    #   use_latest_ami_release_version = true
+      use_latest_ami_release_version = true
 
-    #   # This will get added to what AWS provides
-    #   bootstrap_extra_args = <<-EOT
-    #     # extra args added
-    #     [settings.kernel]
-    #     lockdown = "integrity"
-    #   EOT
-    # }
+      # This will get added to what AWS provides
+      bootstrap_extra_args = <<-EOT
+        # extra args added
+        [settings.kernel]
+        lockdown = "integrity"
+      EOT
+    }
 
     # Custom AMI, using module provided bootstrap data
     # bottlerocket_custom = {
@@ -188,118 +188,118 @@ module "eks" {
     # }
 
     # Complete
-    complete = {
-      name            = "complete-eks-mng"
-      use_name_prefix = true
+  #   complete = {
+  #     name            = "complete-eks-mng"
+  #     use_name_prefix = true
 
-      subnet_ids = module.vpc.private_subnets
+  #     subnet_ids = module.vpc.private_subnets
 
-      min_size     = 1
-      max_size     = 7
-      desired_size = 1
+  #     min_size     = 1
+  #     max_size     = 7
+  #     desired_size = 1
 
-      ami_id                     = data.aws_ami.eks_default.image_id
-      enable_bootstrap_user_data = true
+  #     ami_id                     = data.aws_ami.eks_default.image_id
+  #     enable_bootstrap_user_data = true
 
-      pre_bootstrap_user_data = <<-EOT
-        export FOO=bar
-      EOT
+  #     pre_bootstrap_user_data = <<-EOT
+  #       export FOO=bar
+  #     EOT
 
-      post_bootstrap_user_data = <<-EOT
-        echo "you are free little kubelet!"
-      EOT
+  #     post_bootstrap_user_data = <<-EOT
+  #       echo "you are free little kubelet!"
+  #     EOT
 
-      capacity_type        = "SPOT"
-      force_update_version = true
-      instance_types       = ["t3.medium"]
-      labels = {
-        GithubRepo = "terraform-aws-eks"
-        GithubOrg  = "terraform-aws-modules"
-      }
+  #     capacity_type        = "SPOT"
+  #     force_update_version = true
+  #     instance_types       = ["t3.medium"]
+  #     labels = {
+  #       GithubRepo = "terraform-aws-eks"
+  #       GithubOrg  = "terraform-aws-modules"
+  #     }
 
-      taints = [
-        {
-          key    = "dedicated"
-          value  = "gpuGroup"
-          effect = "NO_SCHEDULE"
-        }
-      ]
+  #     taints = [
+  #       {
+  #         key    = "dedicated"
+  #         value  = "gpuGroup"
+  #         effect = "NO_SCHEDULE"
+  #       }
+  #     ]
 
-      update_config = {
-        max_unavailable_percentage = 33 # or set `max_unavailable`
-      }
+  #     update_config = {
+  #       max_unavailable_percentage = 33 # or set `max_unavailable`
+  #     }
 
-      description = "EKS managed node group example launch template"
+  #     description = "EKS managed node group example launch template"
 
-      ebs_optimized           = true
-      disable_api_termination = false
-      enable_monitoring       = true
+  #     ebs_optimized           = true
+  #     disable_api_termination = false
+  #     enable_monitoring       = true
 
-      block_device_mappings = {
-        xvda = {
-          device_name = "/dev/xvda"
-          ebs = {
-            volume_size           = 75
-            volume_type           = "gp3"
-            iops                  = 3000
-            throughput            = 150
-            encrypted             = true
-            #kms_key_id            = module.ebs_kms_key.key_arn
-            delete_on_termination = true
-          }
-        }
-      }
+  #     block_device_mappings = {
+  #       xvda = {
+  #         device_name = "/dev/xvda"
+  #         ebs = {
+  #           volume_size           = 75
+  #           volume_type           = "gp3"
+  #           iops                  = 3000
+  #           throughput            = 150
+  #           encrypted             = true
+  #           #kms_key_id            = module.ebs_kms_key.key_arn
+  #           delete_on_termination = true
+  #         }
+  #       }
+  #     }
 
-      metadata_options = {
-        http_endpoint               = "enabled"
-        http_tokens                 = "required"
-        http_put_response_hop_limit = 2
-        instance_metadata_tags      = "disabled"
-      }
+  #     metadata_options = {
+  #       http_endpoint               = "enabled"
+  #       http_tokens                 = "required"
+  #       http_put_response_hop_limit = 2
+  #       instance_metadata_tags      = "disabled"
+  #     }
 
-      create_iam_role          = true
-      iam_role_name            = "eks-managed-node-group-complete-example"
-      iam_role_use_name_prefix = false
-      iam_role_description     = "EKS managed node group complete example role"
-      iam_role_tags = {
-        Purpose = "Protector of the kubelet"
-      }
-      iam_role_additional_policies = {
-        AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-        additional                         = aws_iam_policy.node_additional.arn
-      }
+  #     create_iam_role          = true
+  #     iam_role_name            = "eks-managed-node-group-complete-example"
+  #     iam_role_use_name_prefix = false
+  #     iam_role_description     = "EKS managed node group complete example role"
+  #     iam_role_tags = {
+  #       Purpose = "Protector of the kubelet"
+  #     }
+  #     iam_role_additional_policies = {
+  #       AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  #       additional                         = aws_iam_policy.node_additional.arn
+  #     }
 
-      launch_template_tags = {
-        # enable discovery of autoscaling groups by cluster-autoscaler
-        "k8s.io/cluster-autoscaler/enabled" : true,
-        "k8s.io/cluster-autoscaler/${local.name}" : "owned",
-      }
+  #     launch_template_tags = {
+  #       # enable discovery of autoscaling groups by cluster-autoscaler
+  #       "k8s.io/cluster-autoscaler/enabled" : true,
+  #       "k8s.io/cluster-autoscaler/${local.name}" : "owned",
+  #     }
 
-      tags = {
-        ExtraTag = "EKS managed node group complete example"
-      }
-    }
+  #     tags = {
+  #       ExtraTag = "EKS managed node group complete example"
+  #     }
+  #   }
 
-    efa = {
-      # Disabling automatic creation due to instance type/quota availability
-      # Can be enabled when appropriate for testing/validation
-      create = false
+  #   efa = {
+  #     # Disabling automatic creation due to instance type/quota availability
+  #     # Can be enabled when appropriate for testing/validation
+  #     create = false
 
-      instance_types = ["t3.medium"]
-      ami_type       = "AL2_x86_64_GPU"
+  #     instance_types = ["t3.medium"]
+  #     ami_type       = "AL2_x86_64_GPU"
 
-      enable_efa_support      = true
-      pre_bootstrap_user_data = <<-EOT
-        # Mount NVME instance store volumes since they are typically
-        # available on instances that support EFA
-        setup-local-disks raid0
-      EOT
+  #     enable_efa_support      = true
+  #     pre_bootstrap_user_data = <<-EOT
+  #       # Mount NVME instance store volumes since they are typically
+  #       # available on instances that support EFA
+  #       setup-local-disks raid0
+  #     EOT
 
-      min_size     = 2
-      max_size     = 2
-      desired_size = 2
-    }
-  }
+  #     min_size     = 2
+  #     max_size     = 2
+  #     desired_size = 2
+  #   }
+  # }
 
   access_entries = {
     # One access entry with a policy associated
